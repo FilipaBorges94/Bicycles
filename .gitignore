@@ -127,3 +127,4 @@ buildNumber.properties
 
 # Visual Paradigm backups
 *.bak_000f
+/.idea/runConfigurations.xml
