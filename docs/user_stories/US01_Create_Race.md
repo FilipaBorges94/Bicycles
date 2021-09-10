@@ -263,7 +263,7 @@ activate RDDA
 RDDA --> RR : endDate
 deactivate RDDA
 
-RR --> SR **: create(raceName, initialDate, endDate)
+RR --> SR **: create(raceId, raceName, initialDate, endDate)
 
 [<-- RR: savedRace
 
@@ -309,7 +309,7 @@ SC--> RDDA : endDate
 deactivate SC
 RDDA --> RendDJPA ** : create(raceName)
 
-RDDA --> RJPA ** : create(raceIdJPA, raceNameJPA, initialDateJPA, endDateJPA)
+RDDA --> RJPA ** : create(raceNameJPA, initialDateJPA, endDateJPA)
 
 [<-- RDDA: raceJPA
 deactivate RDDA
