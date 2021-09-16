@@ -4,10 +4,11 @@
 
 _As an administrator, I want to know, which are the days off, i.e, the days when there are no stages._
 
-The race has a name and has several stages, these stages have an order.
+The race has several stages, these stages have an order and each stage has an initial date.
 
-To create a race we first need to know the name of the race, and the initial and end date of the race must also be
-known.
+To get the days off in a race, it is necessary to know the dates of all the stages within the race. A race has an
+initial and end date, and it is possible to obtain the days off (i.e. without stages) by knowing the days of each stage,
+between the period of time of the race.
 
 ## 1.1. System Sequence Diagram
 
@@ -41,8 +42,8 @@ This US has dependencies on the [US01] and [US02], since it needs an existing Ra
 
 According to what was presented in the US, a race is created upon request from the Administrator.
 
-A race should be created with an alphanumeric string as its name, initial and end date. In addition, a Race will have its
-own classification.
+A race should be created with an alphanumeric string as its name, initial and end date. In addition, a Race will have
+its own classification.
 
 The identification of the race across the application is obtained by the combination  
 of its name and its parent.
@@ -93,7 +94,7 @@ Race "1..*" --> "1" Date : initial date
 Race "1..*" --> "1" Date : end date 
 Race "1" -l-> "1..*" StageId : has
 Stage "1" -> "1" StageId 
-
+Stage "1" -> "1" Date : date 
 
 @enduml
 -->
@@ -386,7 +387,7 @@ The main challenges that were found while implementing this functionality were:
 
 # 6. Comments
 
-[us02]: US02.md
+[us02]: US02_Add_Stage.md
 
-[us06]: US06.md
+[us06]: US06_Total_Race_Length.md
 
