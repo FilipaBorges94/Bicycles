@@ -189,6 +189,142 @@ TC --> UI : anAthleteDTO
 deactivate TC
 UI --> REP : inform sucess
 deactivate UI
+```
+
+```puml
+@startuml US11_SD
+header Ref
+title fromDTOToDomain()
+autonumber
+participant ": MemberAssembler" as MAS
+participant "memberName\n: MemberName" as MN
+participant "birthDate\n: Date" as BD
+participant "height\n: Height" as HG
+participant "weight\n: Weight" as WG
+participant "federationNumber\n: FederationNumber" as FN
+participant "memberVOs\n: MemberVOs" as MVO
+
+[-> MAS : fromDTOToDomain(memberInputDTO)
+activate MAS
+MAS --> MN** : create(memberInputDTO)
+MAS --> BD** : create(memberInputDTO)
+MAS --> HG** : create(memberInputDTO)
+MAS --> WG** : create(memberInputDTO)
+MAS --> FN** : create(memberInputDTO)
+MAS --> MVO** : create(memberName, birthDate, height, weight, federationNumber)
+
+[<-- MAS : memberVOs
+deactivate MAS
+
+```
+
+```puml
+@startuml US11_SD
+header Ref
+title buildMember()
+autonumber
+participant ": MemberFactory" as MF
+participant ": MemberBuilder" as MBL
+participant "memberName\n: MemberName" as MN
+participant "birthDate\n: Date" as BD
+participant "height\n: Height" as HG
+participant "weight\n: Weight" as WG
+participant "aTeamName\n: TeamName" as TN
+participant "aMember\n: Member" as M
+
+
+[-> MF : buildMember(memberVOs, teamName)
+activate MF
+MF -> MBL** : buildMember(memberVOs.getFederationNumber)
+activate MBL
+MBL --> MN** : withName(memberVOs.getName)
+MBL --> BD** : withBirthDate(memberVOs.getBirthDate)
+MBL --> HG** : withHeight(memberVOs.getHeight)
+MBL --> WG** : withWeight(memberVOs.getWeight)
+MBL --> TN** : withTeamName(teamName)
+MBL --> M** : build()
+MBL -> MBL : validateMember()
+MBL --> MF : aMember
+
+deactivate MBL
+[<-- MF : aMember
+deactivate MF
+```
+
+```puml
+@startuml US11_SD
+header Ref
+title saveMember()
+autonumber
+participant "memberRepository\n: MemberRepository" as MR
+participant ": MemberDomainDataAssembler" as MDDA
+participant "aMemberJPA\n: MemberJPA" as MJPA
+participant "memberRepositoryJPA\n: IMemberRepositoryJPA" as MRJPA <<interface>>
+
+
+[-> MR : saveMember(aMember)
+activate MR
+MR -> MDDA : toData(aMember)
+activate MDDA
+MDDA --> MJPA** : create()
+MDDA --> MR : aMemberJPA
+deactivate MDDA
+MR -> MRJPA : save(aMemberJPA)
+activate MRJPA 
+MRJPA --> MR : savedMemberJPA
+deactivate MRJPA 
+MR -> MR : toDomainMember(savedMemberJPA)
+
+[<-- MR : savedMember
+deactivate MR
+
+```
+
+```puml
+@startuml US11_SD
+header Ref
+title registerAthlete()
+autonumber
+participant "teamRepository\n: TeamRepository" as TR
+participant "aTeamNameJPA\n: TeamNameJPA" as TNJPA
+participant "teamRepositoryJPA\n: ITeamRepositoryJPA" as TRJPA <<interface>>
+participant "aTeamJPA\n: TeamJPA" as TJPA
+participant "aFederationNumberJPA\n: FederationNumberJPA" as FNJPA
+participant " aMemberJPA\n: MemberJPA" as MJPA
+
+
+[-> TR : registerAthlete(savedMember, teamName)
+activate TR
+TR -> TNJPA** : create(teamName)
+
+TR -> TRJPA : findById(aTeamNameJPA)
+activate TRJPA
+TRJPA --> TR : teamOptional
+deactivate TRJPA
+
+alt teamOptional.isPresent()==true
+TR -> TJPA : teamOptional.get()
+activate TJPA
+TJPA --> TR : aTeamJPA
+deactivate TJPA
+TR -> FNJPA ** : create(federationNumber)
+TR -> TJPA : addAthleteToTeam(aFederationNumberJPA)
+activate TJPA
+TJPA -> MJPA **  : create(aFederationNumberJPA)
+TJPA -> TJPA : add(aMemberJPA)
+
+TR -> TRJPA : save(aTeamJPA)
+activate TRJPA
+TRJPA --> TR : savedTeamJPA
+
+deactivate TJPA
+deactivate TRJPA
+TR -> TR : toDomainTeam(savedTeamJPA)
+end
+
+
+[<-- TR : savedTeam
+deactivate TR
 
 ```
 
